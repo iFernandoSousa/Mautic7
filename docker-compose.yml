@@ -43,10 +43,11 @@ services:
       - PHP_INI_DATE_TIMEZONE=${PHP_INI_DATE_TIMEZONE:-UTC}
       - PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT:-512M}
     volumes:
-      - mautic_data:/var/www/html
-    # AUTOMATION FIX 1: Force permissions to be correct on every start
-    entrypoint: ["/bin/sh", "-c", "chown -R www-data:www-data /var/www/html && /entrypoint.sh apache2-foreground"]
-    # AUTOMATION FIX 2: Check if the CONFIG FILE exists. If not, report 'unhealthy'.
+      - mautic_config:/var/www/html/config
+      - mautic_logs:/var/www/html/var/logs
+      - mautic_media_files:/var/www/html/docroot/media/files
+      - mautic_media_images:/var/www/html/docroot/media/images
+    # Check if the CONFIG FILE exists. If not, report 'unhealthy'.
     # This signals the other containers to keep waiting.
     healthcheck:
       test: ["CMD-SHELL", "test -f /var/www/html/config/local.php || exit 1"]
@@ -76,7 +77,10 @@ services:
       - MAUTIC_TRUSTED_PROXIES=${MAUTIC_TRUSTED_PROXIES:-[]}
       - PHP_INI_DATE_TIMEZONE=${PHP_INI_DATE_TIMEZONE:-UTC}
     volumes:
-      - mautic_data:/var/www/html
+      - mautic_config:/var/www/html/config
+      - mautic_logs:/var/www/html/var/logs
+      - mautic_media_files:/var/www/html/docroot/media/files
+      - mautic_media_images:/var/www/html/docroot/media/images
 
   # -------------------------------------------------------------------------
   # Service 4: Mautic Worker (Waits for Install)
@@ -106,7 +110,10 @@ services:
       - MAUTIC_TRUSTED_PROXIES=${MAUTIC_TRUSTED_PROXIES:-[]}
       - PHP_INI_DATE_TIMEZONE=${PHP_INI_DATE_TIMEZONE:-UTC}
     volumes:
-      - mautic_data:/var/www/html
+      - mautic_config:/var/www/html/config
+      - mautic_logs:/var/www/html/var/logs
+      - mautic_media_files:/var/www/html/docroot/media/files
+      - mautic_media_images:/var/www/html/docroot/media/images
 
   # -------------------------------------------------------------------------
   # Service 5: phpMyAdmin
@@ -126,4 +133,7 @@ services:
 
 volumes:
   mariadb_data:
-  mautic_data:
+  mautic_config:
+  mautic_logs:
+  mautic_media_files:
+  mautic_media_images:
