@@ -14,4 +14,10 @@ RUN COMPOSER_ALLOW_SUPERUSER=1 composer config --no-plugins allow-plugins.compos
     && COMPOSER_ALLOW_SUPERUSER=1 composer config --no-plugins allow-plugins.mautic/core-composer-scaffold true \
     && COMPOSER_ALLOW_SUPERUSER=1 composer config --no-plugins allow-plugins.mautic/core-project-message true \
     && COMPOSER_ALLOW_SUPERUSER=1 composer config --no-plugins allow-plugins.php-http/discovery true \
-    && COMPOSER_ALLOW_SUPERUSER=1 composer require symfony/amazon-mailer:^7.4 etailors/mautic-amazon-ses:^1.0 -W --no-interaction --no-scripts
+    && COMPOSER_ALLOW_SUPERUSER=1 composer require symfony/amazon-mailer:^7.4 etailors/mautic-amazon-ses:^1.0 -W --no-interaction --no-scripts \
+    && chown -R www-data:www-data /var/www/html/docroot/plugins/AmazonSesBundle
+
+COPY entrypoint-wrapper.sh /entrypoint-wrapper.sh
+RUN chmod +x /entrypoint-wrapper.sh
+
+ENTRYPOINT ["/entrypoint-wrapper.sh"]
